@@ -1,39 +1,20 @@
 import React from "react";
 import Spinner from "../layout/Spinner";
 import UserItem from "./UserItem";
-import { useEffect, useState } from "react";
-
-interface User {
-  login: string;
-  avatar_url: string;
-  id: number;
-}
+import { useEffect, useContext } from "react";
+import GithubContext from "../../context/github/GithubContext";
 
 function UserResults(): JSX.Element {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { users, loading, fetchUsers } = useContext(GithubContext);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
-
-  async function fetchUsers(): Promise<any> {
-    const response = await fetch(`${process.env.REACT_APP_GITHUB_URL}/users`, {
-      headers: {
-        Authorization: `token ${process.env.REACT_APP_GITHUB_TOKEN}`,
-      },
-    });
-
-    const data = await response.json();
-
-    setUsers(data);
-    setLoading(false);
-  }
+  }, [fetchUsers]);
 
   if (!loading) {
     return (
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2">
-        {users.map((user) => (
+        {users!.map((user) => (
           <UserItem user={user} key={user.id} />
         ))}
       </div>
