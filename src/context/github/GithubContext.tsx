@@ -19,7 +19,7 @@ interface GithubProviderProps {
 
 export const INITIAL_STATE: GithubContextInteface = {
   users: [],
-  loading: true,
+  loading: false,
   fetchUsers: async () => {},
 };
 
@@ -31,7 +31,9 @@ const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN;
 export const GithubProvider = ({ children }: GithubProviderProps) => {
   const [state, dispatch] = useReducer(githubReducer, INITIAL_STATE);
 
+  //Get initial users (testing purposes)
   async function fetchUsers(): Promise<any> {
+    setLoading();
     const response = await fetch(`${GITHUB_URL}/users`, {
       headers: {
         Authorization: `token ${GITHUB_TOKEN}`,
@@ -46,6 +48,8 @@ export const GithubProvider = ({ children }: GithubProviderProps) => {
     });
   }
 
+  // Set loading
+  const setLoading = (): void => dispatch({ type: "SET_LOADING" });
   return (
     <GithubContext.Provider
       value={{ users: state.users, loading: state.loading, fetchUsers }}

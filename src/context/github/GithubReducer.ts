@@ -1,9 +1,11 @@
 import { INITIAL_STATE, User } from "./GithubContext";
 
-type ACTION_TYPES = {
-  type: string;
-  payload: User[];
-};
+type ACTION_TYPES =
+  | {
+      type: "GET_USERS";
+      payload: User[];
+    }
+  | { type: "SET_LOADING" };
 
 const githubReducer = (
   state: typeof INITIAL_STATE,
@@ -15,6 +17,11 @@ const githubReducer = (
         ...state,
         users: action.payload,
         loading: false,
+      };
+    case "SET_LOADING":
+      return {
+        ...state,
+        loading: true,
       };
     default:
       return state;
