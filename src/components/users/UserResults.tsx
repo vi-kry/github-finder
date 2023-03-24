@@ -9,7 +9,7 @@ function UserResults(): JSX.Element {
 
   useEffect(() => {
     fetchUsers();
-  }, [fetchUsers]);
+  }, []);
 
   if (!loading) {
     return (

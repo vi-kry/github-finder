@@ -1,16 +1,15 @@
-import { createContext, useState, Dispatch, SetStateAction } from "react";
+import { createContext, useReducer } from "react";
+import githubReducer from "./GithubReducer";
 
-interface User {
+export interface User {
   login: string;
   avatar_url: string;
   id: number;
 }
 
-interface GithubContextInteface {
+export interface GithubContextInteface {
   users: User[];
-  setUsers: Dispatch<SetStateAction<User[]>>;
   loading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>;
   fetchUsers: () => Promise<any>;
 }
 
@@ -18,20 +17,19 @@ interface GithubProviderProps {
   children: React.ReactNode;
 }
 
-const GithubContext = createContext<GithubContextInteface>({
+export const INITIAL_STATE: GithubContextInteface = {
   users: [],
-  setUsers: () => {},
-  loading: false,
-  setLoading: () => {},
+  loading: true,
   fetchUsers: async () => {},
-});
+};
+
+const GithubContext = createContext<GithubContextInteface>(INITIAL_STATE);
 
 const GITHUB_URL = process.env.REACT_APP_GITHUB_URL;
 const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN;
 
 export const GithubProvider = ({ children }: GithubProviderProps) => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [state, dispatch] = useReducer(githubReducer, INITIAL_STATE);
 
   async function fetchUsers(): Promise<any> {
     const response = await fetch(`${GITHUB_URL}/users`, {
@@ -42,13 +40,15 @@ export const GithubProvider = ({ children }: GithubProviderProps) => {
 
     const data = await response.json();
 
-    setUsers(data);
-    setLoading(false);
+    dispatch({
+      type: "GET_USERS",
+      payload: data,
+    });
   }
 
   return (
     <GithubContext.Provider
-      value={{ users, loading, fetchUsers, setUsers, setLoading }}
+      value={{ users: state.users, loading: state.loading, fetchUsers }}
     >
       {children}
     </GithubContext.Provider>
