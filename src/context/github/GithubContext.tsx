@@ -10,7 +10,7 @@ export interface User {
 export interface GithubContextInteface {
   users: User[];
   loading: boolean;
-  fetchUsers: () => Promise<any>;
+  searchUsers: (text: string) => Promise<any>;
 }
 
 interface GithubProviderProps {
@@ -20,7 +20,7 @@ interface GithubProviderProps {
 export const INITIAL_STATE: GithubContextInteface = {
   users: [],
   loading: false,
-  fetchUsers: async () => {},
+  searchUsers: async () => {},
 };
 
 const GithubContext = createContext<GithubContextInteface>(INITIAL_STATE);
@@ -31,20 +31,23 @@ const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN;
 export const GithubProvider = ({ children }: GithubProviderProps) => {
   const [state, dispatch] = useReducer(githubReducer, INITIAL_STATE);
 
-  //Get initial users (testing purposes)
-  async function fetchUsers(): Promise<any> {
+  //Get search results
+  async function searchUsers(text: string): Promise<any> {
+    const params = new URLSearchParams({
+      q: text,
+    });
     setLoading();
-    const response = await fetch(`${GITHUB_URL}/users`, {
+    const response = await fetch(`${GITHUB_URL}/search/users?${params}`, {
       headers: {
         Authorization: `token ${GITHUB_TOKEN}`,
       },
     });
 
-    const data = await response.json();
+    const { items } = await response.json();
 
     dispatch({
       type: "GET_USERS",
-      payload: data,
+      payload: items,
     });
   }
 
@@ -52,7 +55,7 @@ export const GithubProvider = ({ children }: GithubProviderProps) => {
   const setLoading = (): void => dispatch({ type: "SET_LOADING" });
   return (
     <GithubContext.Provider
-      value={{ users: state.users, loading: state.loading, fetchUsers }}
+      value={{ users: state.users, loading: state.loading, searchUsers }}
     >
       {children}
     </GithubContext.Provider>
