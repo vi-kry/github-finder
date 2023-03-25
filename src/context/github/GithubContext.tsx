@@ -11,6 +11,7 @@ export interface GithubContextInteface {
   users: User[];
   loading: boolean;
   searchUsers: (text: string) => Promise<any>;
+  clearUsers: () => void;
 }
 
 interface GithubProviderProps {
@@ -21,6 +22,7 @@ export const INITIAL_STATE: GithubContextInteface = {
   users: [],
   loading: false,
   searchUsers: async () => {},
+  clearUsers: () => {},
 };
 
 const GithubContext = createContext<GithubContextInteface>(INITIAL_STATE);
@@ -51,11 +53,24 @@ export const GithubProvider = ({ children }: GithubProviderProps) => {
     });
   }
 
+  // Clear users from state
+  const clearUsers = (): void =>
+    dispatch({
+      type: "CLEAR_USERS",
+      payload: [],
+    });
+
   // Set loading
   const setLoading = (): void => dispatch({ type: "SET_LOADING" });
+
   return (
     <GithubContext.Provider
-      value={{ users: state.users, loading: state.loading, searchUsers }}
+      value={{
+        users: state.users,
+        loading: state.loading,
+        searchUsers,
+        clearUsers,
+      }}
     >
       {children}
     </GithubContext.Provider>

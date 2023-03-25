@@ -4,7 +4,7 @@ import GithubContext from "../../context/github/GithubContext";
 function UserSearch(): JSX.Element {
   const [text, setText] = useState<string>("");
 
-  const { users, searchUsers } = useContext(GithubContext);
+  const { users, searchUsers, clearUsers } = useContext(GithubContext);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
     setText(e.target.value);
@@ -19,6 +19,7 @@ function UserSearch(): JSX.Element {
       setText("");
     }
   };
+
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 mb-8 gap-8">
       <div>
@@ -44,7 +45,13 @@ function UserSearch(): JSX.Element {
       </div>
       {users.length > 0 && (
         <div>
-          <button className="btn btn-ghost btn-lg">Clear</button>
+          <button
+            type="submit"
+            className="btn btn-ghost btn-lg"
+            onClick={clearUsers}
+          >
+            Clear
+          </button>
         </div>
       )}
     </div>
