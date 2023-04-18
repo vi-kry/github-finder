@@ -1,4 +1,4 @@
-import { INITIAL_STATE, User } from "./GithubContext";
+import { INITIAL_STATE, User, Repo } from "./GithubContext";
 
 type ACTION_TYPES =
   | {
@@ -6,7 +6,9 @@ type ACTION_TYPES =
       payload: User[];
     }
   | { type: "SET_LOADING" }
-  | { type: "CLEAR_USERS"; payload: [] };
+  | { type: "CLEAR_USERS"; payload: [] }
+  | { type: "GET_USER"; payload: User }
+  | { type: "GET_REPOS"; payload: Repo[] };
 
 const githubReducer = (
   state: typeof INITIAL_STATE,
@@ -17,6 +19,18 @@ const githubReducer = (
       return {
         ...state,
         users: action.payload,
+        loading: false,
+      };
+    case "GET_USER":
+      return {
+        ...state,
+        user: action.payload,
+        loading: false,
+      };
+    case "GET_REPOS":
+      return {
+        ...state,
+        repos: action.payload,
         loading: false,
       };
     case "SET_LOADING":
