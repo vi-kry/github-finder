@@ -136,6 +136,7 @@ export interface GithubContextInterface {
   user: User;
   loading: boolean;
   repos: Repo[];
+  dispatch: React.Dispatch<any>;
   searchUsers: (text: string) => Promise<any>;
   getUser: (login: string) => Promise<any>;
   getUserRepos: (login: string) => Promise<any>;
@@ -167,6 +168,7 @@ export const INITIAL_STATE: GithubContextInterface = {
   },
   loading: false,
   repos: [],
+  dispatch: () => null,
   searchUsers: async () => {},
   getUser: async () => {},
   getUserRepos: async () => {},
@@ -180,26 +182,6 @@ const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN;
 
 export const GithubProvider = ({ children }: GithubProviderProps) => {
   const [state, dispatch] = useReducer(githubReducer, INITIAL_STATE);
-
-  //Get search results
-  async function searchUsers(text: string): Promise<any> {
-    const params = new URLSearchParams({
-      q: text,
-    });
-    setLoading();
-    const response = await fetch(`${GITHUB_URL}/search/users?${params}`, {
-      headers: {
-        Authorization: `token ${GITHUB_TOKEN}`,
-      },
-    });
-
-    const { items } = await response.json();
-
-    dispatch({
-      type: "GET_USERS",
-      payload: items,
-    });
-  }
 
   //Get single user
   async function getUser(login: string): Promise<any> {
@@ -261,11 +243,8 @@ export const GithubProvider = ({ children }: GithubProviderProps) => {
   return (
     <GithubContext.Provider
       value={{
-        users: state.users,
-        loading: state.loading,
-        user: state.user,
-        repos: state.repos,
-        searchUsers,
+        ...state,
+        dispatch,
         clearUsers,
         getUser,
         getUserRepos,
