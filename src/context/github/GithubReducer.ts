@@ -6,7 +6,7 @@ type ACTION_TYPES =
       payload: User[];
     }
   | { type: "SET_LOADING" }
-  | { type: "CLEAR_USERS"; payload: [] }
+  | { type: "CLEAR_USERS" }
   | { type: "GET_USER"; payload: User }
   | { type: "GET_REPOS"; payload: Repo[] };
 
@@ -41,7 +41,7 @@ const githubReducer = (
     case "CLEAR_USERS":
       return {
         ...state,
-        users: action.payload,
+        users: [],
       };
     default:
       return state;

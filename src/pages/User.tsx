@@ -5,22 +5,28 @@ import Spinner from "../components/layout/Spinner";
 import RepoList from "../components/repos/RepoList";
 import { useParams } from "react-router-dom";
 import GithubContext from "../context/github/GithubContext";
+import { getUser, getUserRepos } from "../context/github/GithubActions";
 
 interface ParamTypes {
   login: string;
 }
 
 function User(): JSX.Element {
-  const { getUser, user, loading, getUserRepos, repos } =
-    useContext(GithubContext);
+  const { user, loading, repos, dispatch } = useContext(GithubContext);
 
   const params = useParams<keyof ParamTypes>() as ParamTypes;
 
   useEffect(() => {
-    getUser(params.login);
-    getUserRepos(params.login);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    dispatch({ type: "SET_LOADING" });
+    const getUserData = async (): Promise<any> => {
+      const userData = await getUser(params.login);
+      dispatch({ type: "GET_USER", payload: userData });
+
+      const userRepoData = await getUserRepos(params.login);
+      dispatch({ type: "GET_REPOS", payload: userRepoData });
+    };
+    getUserData();
+  }, [dispatch, params.login]);
 
   const {
     name,

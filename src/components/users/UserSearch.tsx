@@ -6,7 +6,7 @@ import { searchUsers } from "../../context/github/GithubActions";
 function UserSearch(): JSX.Element {
   const [text, setText] = useState<string>("");
 
-  const { users, dispatch, clearUsers } = useContext(GithubContext);
+  const { users, dispatch } = useContext(GithubContext);
   const { setAlert } = useContext(AlertContext);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
@@ -55,7 +55,7 @@ function UserSearch(): JSX.Element {
           <button
             type="submit"
             className="btn btn-ghost btn-lg"
-            onClick={clearUsers}
+            onClick={() => dispatch({ type: "CLEAR_USERS" })}
           >
             Clear
           </button>
